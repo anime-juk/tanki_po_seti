@@ -1,0 +1,157 @@
+<script src="socket.io.js"></script>
+<style>
+    #t1{
+        float: left;
+    }
+    #b1{
+        margin-left:75%;
+    }
+    #b2{
+        padding-left: 3%;
+        float: left; 
+    }
+    #b3{
+        padding-left: 3%;
+        float: left; 
+    }
+</style>
+<canvas id="t1"></canvas>
+<script>
+var port = 3000;
+var server = '192.168.0.104';
+var socket = io.connect(server + ':' + port);
+var c = document.getElementById("t1");
+var ctx = c.getContext("2d");
+c.width = 900;
+c.height = 750;
+var x=150;
+var y=150;
+var x3=550;
+var y3=150
+var a=0;
+var a3=0;
+var a1=0;
+var x1=0;
+var xx2=0;
+var pp1=1;
+var pp=1;
+var aa=a;
+var aa1=a;
+var name1=prompt("введите номер танка (1 или 2)");
+if (name1 == '2')  {x=550;x3=150;}
+if (name1 > 2 ){window.location.reload(); }
+var xx=1000,yy=1000,xx1=1000,yy1=1000;
+function ris()
+{
+    function func(mov) {
+        console.log(mov);
+    switch(mov.keyCode){
+        case 119:
+        if((x+5*Math.cos(a))<=880 && (x+5*Math.cos(a))>=20){
+        x=x+5*Math.cos(a);
+        socket.emit('XX',x);
+        }
+        if((y-5*(-Math.sin(a)))<=730 && (y-5*(-Math.sin(a)))>=20){
+        y=y-5*(-Math.sin(a));
+        socket.emit('YY',y);
+        }
+        break;
+        case 115:
+        if((x-5*Math.cos(a))<=880 && (x-5*Math.cos(a))>=20){
+        x=x-5*Math.cos(a);
+        socket.emit('XX',x);
+        }
+        if((y+5*(-Math.sin(a)))<=730 && (y+5*(-Math.sin(a)))>=20 ){
+        y=y+5*(-Math.sin(a));
+        socket.emit('YY',y);
+        }
+        break;
+        case 97:
+        a=a-0.05;
+        socket.emit('AA',a);
+        break;
+        case 100:
+        a=a+0.05;
+        socket.emit('AA',a);
+        break;
+        case 114:
+        if(pp == 1){pp=-pp;xx=x;yy=y;aa=a;socket.emit('PP',pp);window.setTimeout(()=>{pp=1;xx=1000;yy=1000;},2500);}
+        break;
+}
+}
+window.onkeypress=func;
+socket.on('XX1', function(msg){x3=msg;});
+socket.on('YY1',function(msg){y3=msg;});
+socket.on('AA1',function(msg){a3=msg;});
+socket.on('PP1',function(msg){
+    pp1=msg;
+    xx1=x3;yy1=y3;aa1=a3;
+
+}
+);
+socket.on('n1',function(msg){document.getElementById('b2').innerHTML='Игрок-1(урон):'+ msg});
+socket.on('n2',function(msg){document.getElementById('b3').innerHTML='Игрок-2(урон):'+ msg});
+if((Math.abs(xx+x1*Math.cos(aa)-x3)<20)&&(Math.abs(yy-x1*(-Math.sin(aa))-y3)<20)){
+pp=0;
+socket.emit('goal',name1);
+}
+if((Math.abs(xx1+xx2*Math.cos(aa1)-x)<20)&&(yy1-xx2*(-Math.sin(aa1))-y)<20){
+pp1=0;
+}
+ctx.fillRect(0,0, 900, 900);
+ctx.beginPath();
+ctx.lineWidth = 10;
+ctx.fillStyle = "blue";
+ctx.strokeStyle = "yellow";
+ctx.moveTo(x+20*Math.cos(Math.PI*0.75+a),y-20*(-Math.sin(Math.PI*0.75+a)));
+ctx.lineTo(x+20*Math.cos(Math.PI*0.25+a),y-20*(-Math.sin(Math.PI*0.25+a)));
+ctx.moveTo(x+20*Math.cos(Math.PI*1.75+a),y-20*(-Math.sin(Math.PI*1.75+a)));
+ctx.lineTo(x+20*Math.cos(Math.PI*1.25+a),y-20*(-Math.sin(Math.PI*1.25+a)));
+ctx.moveTo(x+20*Math.cos(Math.PI*0.75+a),y-20*(-Math.sin(Math.PI*0.75+a)));
+ctx.lineTo(x+20*Math.cos(Math.PI*1.25+a),y-20*(-Math.sin(Math.PI*1.25+a)));
+ctx.moveTo(x+20*Math.cos(Math.PI*0.25+a),y-20*(-Math.sin(Math.PI*0.25+a)));
+ctx.lineTo(x+20*Math.cos(Math.PI*1.75+a),y-20*(-Math.sin(Math.PI*1.75+a)));
+ctx.moveTo(x+15*Math.cos(a),y-15*(-Math.sin(a)));
+ctx.lineTo(x+30*Math.cos(a),y-30*(-Math.sin(a)));
+ctx.stroke();
+ctx.beginPath();
+ctx.arc(xx+x1*Math.cos(aa),yy-x1*(-Math.sin(aa)),2,0,Math.PI*2,true);
+ctx.stroke();
+ctx.beginPath();
+ctx.strokeStyle = "red";
+ctx.moveTo(x3+20*Math.cos(Math.PI*0.75+a3),y3-20*(-Math.sin(Math.PI*0.75+a3)));
+ctx.lineTo(x3+20*Math.cos(Math.PI*0.25+a3),y3-20*(-Math.sin(Math.PI*0.25+a3)));
+ctx.moveTo(x3+20*Math.cos(Math.PI*1.75+a3),y3-20*(-Math.sin(Math.PI*1.75+a3)));
+ctx.lineTo(x3+20*Math.cos(Math.PI*1.25+a3),y3-20*(-Math.sin(Math.PI*1.25+a3)));
+ctx.moveTo(x3+20*Math.cos(Math.PI*0.75+a3),y3-20*(-Math.sin(Math.PI*0.75+a3)));
+ctx.lineTo(x3+20*Math.cos(Math.PI*1.25+a3),y3-20*(-Math.sin(Math.PI*1.25+a3)));
+ctx.moveTo(x3+20*Math.cos(Math.PI*0.25+a3),y3-20*(-Math.sin(Math.PI*0.25+a3)));
+ctx.lineTo(x3+20*Math.cos(Math.PI*1.75+a3),y3-20*(-Math.sin(Math.PI*1.75+a3)));
+ctx.moveTo(x3+15*Math.cos(a3),y3-15*(-Math.sin(a3)));
+ctx.lineTo(x3+30*Math.cos(a3),y3-30*(-Math.sin(a3)));
+ctx.stroke();
+ctx.beginPath();
+ctx.arc(xx1+xx2*Math.cos(aa1),yy1-xx2*(-Math.sin(aa1)),2,0,Math.PI*2,true);
+ctx.stroke();
+if(pp == -1){
+x1=x1+5;}
+else{
+    xx=1000;
+    yy=1000;
+    x1=0;
+}
+if(pp1 == -1){
+xx2=xx2+5;}
+else{
+    xx1=1000;
+    yy1=1000;
+    xx2=0;
+}
+window.setTimeout(ris,10);
+}
+ris();
+</script>
+<div id="b1"><h1>Cчет:</h1></div>
+<h1><div id="b2">Игрок-1:</div></h1>
+<h1><div id="b3">Игрок-2:</div></h1>
+
